@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Dish({ id, name, price, category, spicy, onAdd }) {
   const dish = {
     id,
@@ -9,7 +11,11 @@ function Dish({ id, name, price, category, spicy, onAdd }) {
 
   return (
     <div>
-      <h3>{name}</h3>
+      <h3>
+        <Link to={`/menu/${id}`}>
+          {name}
+        </Link>
+      </h3>
 
       <p>{price} ETB</p>
 

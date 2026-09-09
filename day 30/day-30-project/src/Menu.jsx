@@ -1,23 +1,48 @@
-import { useContext, useMemo, useState } from "react";
+import {
+  useContext,
+  useMemo
+} from "react";
+
+import {
+  useSearchParams
+} from "react-router-dom";
+
 import { useFetch } from "./hooks/useFetch";
 import { CartContext } from "./cart/CartProvider";
+
 import CategoryBar from "./CategoryBar";
 import DishList from "./DishList";
 
 function Menu() {
-  const [category, setCategory] = useState("All");
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+  const category =
+    searchParams.get("category") || "All";
 
   const {
     data,
     loading,
     error
-  } = useFetch("/dishes.json", category);
+  } = useFetch(category);
 
   const { dispatch } = useContext(CartContext);
 
   const shown = useMemo(() => {
-    return [...data].sort((a, b) => a.price - b.price);
+    return [...data].sort(
+      (a, b) => a.price - b.price
+    );
   }, [data]);
+
+  function selectCategory(category) {
+    if (category === "All") {
+      setSearchParams({});
+    } else {
+      setSearchParams({
+        category: category
+      });
+    }
+  }
 
   function addToCart(dish) {
     dispatch({
@@ -31,14 +56,16 @@ function Menu() {
   }
 
   if (error) {
-    return <p className="err">{error}</p>;
+    return <p>{error}</p>;
   }
 
   return (
     <>
+      <h2>Menu</h2>
+
       <CategoryBar
         selected={category}
-        onSelect={setCategory}
+        onSelect={selectCategory}
       />
 
       <DishList
